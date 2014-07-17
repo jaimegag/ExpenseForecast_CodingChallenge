@@ -1,0 +1,31 @@
+{
+
+    "income":1000.00,
+
+    "rent":1000.00,
+    "groceries":200.00,
+
+    "purchases": [
+        {
+            "name":"TV",
+            "amt":1000.00
+        },
+        {
+            "name":"Vacation",
+            "amt":4000.00
+        }
+    ],
+
+    "checking": {
+        "min":200.00,
+        "begBal":1500.00
+    },
+
+    "credit": {
+        "payment":100.00,
+        "begBal":2000.00,
+        "apr":0.150
+    }
+
+}
+

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#continuously test and run
+if [ "$#" -eq 1 ]; then
+    sbt "~ ;clear ;test ;run $1"
+else
+    sbt "~ ;clear ;test ;run data/inputs.json"
+fi
+
