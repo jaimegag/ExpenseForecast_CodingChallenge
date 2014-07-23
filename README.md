@@ -71,7 +71,8 @@ The client currently has the following accounts:
         *for bonus objective:
             15% APR
             $2000 starting balance
-
+            Monthly payments first cover interest expenses, then reduce the card balance.
+            Interest expense is calculated by: `statementEndingBalance * APR / 12`
 
 
 ## Input/Output:
@@ -98,7 +99,7 @@ The following libraries have been provided for convenience.  Feel free to use al
     - [JodaTime](http://www.joda.org/joda-time/)
     - [Guava](https://code.google.com/p/guava-libraries/wiki/GuavaExplained)
     - [JUnit](https://github.com/junit-team/junit/wiki/Getting-started)
-    - use `./run` in a separate console window to have your program automatically re-test/run whenever your source code changes
+    - You may use `./run` in a separate console window to have your program automatically re-test/run whenever your source code changes
 
 
 
