@@ -101,6 +101,8 @@ The following libraries have been provided for convenience.  Feel free to use al
     - [JUnit](https://github.com/junit-team/junit/wiki/Getting-started)
     - You may use `./run` in a separate console window to have your program automatically re-test/run whenever your source code changes
 
+## Submission:
 
+Please zip or tarball your source files (excluding target and/or project directories).  Return as an email attachment to your hiring contact at LearnVest.
 
 
