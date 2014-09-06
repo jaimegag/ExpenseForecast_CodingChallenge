@@ -2,4 +2,5 @@ target
 .settings
 .classpath
 .project
+.buildpath
 build.sbt
