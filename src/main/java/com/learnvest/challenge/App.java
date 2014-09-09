@@ -15,8 +15,6 @@ public class App {
     public static void main(String...args) {
     	
     	// Read input parameters
-    	// ClientCase cCase = Json.loadFromFile(args[0], ClientCase.class); // Equivalent result with the 
-    																		// overloaded method using Class
     	ClientCase cCase = Json.loadFromFile(args[0], new TypeToken<ClientCase> () {});
     	
     	// Setting up the timeline
