@@ -22,7 +22,10 @@ public class Json {
     public static <T> T loadFromFile(String path, TypeToken<T> typeToken) {
         return fromJson(getJson(path), typeToken);
     }
-
+    
+    public static <T> T loadFromFile(String path, Class<T> _class) {
+        return fromJson(getJson(path), _class);
+    }
 
     public static JsonElement fromJson(String json) {
         return parser.parse(json);
@@ -32,6 +35,9 @@ public class Json {
         return gson.fromJson(json, typeToken.getType());
     }
 
+    public static <T> T fromJson(String json, Class<T> _class) {
+        return gson.fromJson(json, _class);
+    }
 
     public static <T> String toJson(T t) {
         return gson.toJson(t);
@@ -45,6 +51,5 @@ public class Json {
             throw new IllegalStateException("Could not load file: " + path, e);
         }
     }
-
 }
 
