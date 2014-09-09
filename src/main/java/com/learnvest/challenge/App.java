@@ -26,35 +26,35 @@ public class App {
     	
     	// There are monthly transactions and bi-weekly transactions and so I decided to manage by-weekly cycles
     	// (or windows) to analyze the income-expense flow, from paycheck to paycheck.
-    	// Some windows will be net positive, but some other may be net negative. We assume the use case is realistic and
+    	// Some windows will be net positive, but some other may be net negative. I assume the use case is realistic and
     	// that 28-day/monthly net gain is positive, otherwise no major purchases would be possible ever. So every window or
-    	// every other window must be positive, while we may have a negative window every other window (or every three in
+    	// every other window must be positive, while there might be a negative window every other window (or every three in
     	// rare occasions, or only a couple a year in really rare occasions).
     	// Using the above assumptions these are the 3 different modes I have defined to try provide an answer to the case,
     	// considering that the parameters of the input file can change:
     	// Mode A (max safety):
-    	//   - We assume the worst and consider we are always at the beginning of a negative window: it should be enough 
+    	//   - I assume the worst and consider we are always at the beginning of a negative window: it should be enough 
     	//     to have always enough balance in the checking to cover the maximum possible expense for the worst possible
     	//     day (rent + groceries + credit-card) plus the checking minimum balance, of course.
     	// Mode B (flexible but unsafe):
-    	//   - We can try to be more flexible to allow these purchases earlier in the timeline, by simulating the future
-    	//     and checking if we have enough cash to cover the expenses of the window we are in (e.g: until next 
-    	//     paycheck) without going below the minimum. But this assumption makes this mode not 100% safe: if we are 
-    	//     in a positive window and we cover this window expenses very tightly and next window is a negative one then
-    	//     we may fail to maintain checking account balance above the minimum next week (or after).
+    	//   - Attempt to be more flexible to allow these purchases earlier in the timeline, by simulating the future
+    	//     and checking if there is enough cash to cover the expenses of the current window (e.g: until next 
+    	//     paycheck) without going below the minimum. But this assumption makes this mode not 100% safe: if current window 
+    	//     is a positive window and we cover this window expenses very tightly and next window is a negative one then
+    	//     it may fail to maintain checking account balance above the minimum next week (or after).
     	// Mode C (flexible and safe):
-    	//   - Like Mode B but simulating next window as well and confirming we will not go below the minimum balance during
+    	//   - Like Mode B but simulating next window as well and confirming it will not go below the minimum balance during
     	//     next window either. Assuming that 2 cycles of income are enough to pay for all monthly expenses, this should
-    	//     be safe enough and we don't have to simulate and check a third window. As we simulate up to 4 weeks to the
-    	//     future, this mode has the lowest performance.
+    	//     be safe enough and it shouldn't be necessary to simulate and check a third window. As we simulate up to 4 weeks 
+    	//     to the future, this mode has the lowest performance.
     	Mode mode = Mode.C;
     	 	
-    	// Timeline simulation approach to make sure we can provide the daily net worth for the CreditCard
+    	// Timeline simulation approach to make sure it can provide the daily net worth for the CreditCard
     	TreeMap<String,Float> netWorth = new TreeMap<String,Float>(); // To store the daily net worth
     	DateTime lastPaycheckReceived = new DateTime(2014, 12, 27, 0, 0, 0, 0); // To keep a timeline pointer to when last paycheck was received
     	float currCheckBal = cCase.getChecking().getBegBal(); // Initialized to initial checking balance
     	float currCredBal = cCase.getCredit().getBegBal(); // Initialized to initial credit balance
-    	// For the credit card interest expense we assume a constant monthly interest, based on the initial balance
+    	// For the credit card interest expense I assume a constant monthly interest, based on the initial balance
     	// and the yearly APR. No recalculation every month.
     	float monthlyInterest = cCase.getCredit().getBegBal() * cCase.getCredit().getApr() / 12; // Balance * APR / 12
     	while (!now.isAfter(end)) {
@@ -67,7 +67,7 @@ public class App {
     		}
     		// Process rent
     		if (now.getDayOfMonth() == 1) { // 1st of the Month
-    			currCheckBal -= cCase.getRent(); // We assume the use case is realistic and rent can always be 
+    			currCheckBal -= cCase.getRent(); // I assume the use case is realistic and rent can always be 
     											 // paid without going below min balance if no big purchases are made
     		}
     		// Process groceries
@@ -82,9 +82,9 @@ public class App {
     		// Check feasibility for big purchases, and trigger them if possible
     		for (Purchase p : cCase.getPurchases()) { // For all purchases
     			if (p.getWhen() == null) { // Not yet purchased
-    				// First check if we have enough cash (checking balance + min balance)
+    				// First check if there is enough cash (checking balance + min balance)
     				if ((currCheckBal - p.getAmount()) >= cCase.getChecking().getMin()) {
-    					// Second check if we risk going below minimum in the following days.
+    					// Second check if there is risk to go below minimum in the following days.
     					if (isPurchaseFeasible(cCase, p, mode, currCheckBal, now, lastPaycheckReceived)) { // Purchase feasible!
     						currCheckBal -= p.getAmount();
     						p.setWhen(now.toString("yyyy-MM-dd"));
@@ -127,14 +127,14 @@ public class App {
     		default:
     			break;
     	}
-    	return false; // If mode is not implemented we don't accept purchases.
+    	return false; // If mode is not implemented no purchases are accepted
     }
 
     private static boolean confirmCheckingStaysAboveMinimumOnFollowingWindows(ClientCase cc, float bal, DateTime currDate, DateTime lastpc, int numWindows) {
     	// No need to do parameter error control ...
     	float simBal = bal;
     	DateTime day = new DateTime(currDate);
-    	day = day.plusDays(1); // We check big purchases after paying all expenses of the day, and processing income, so we can start checking next day
+    	day = day.plusDays(1); // I check big purchases after paying all expenses of the day, and processing income, so it starts cheking next day
     	DateTime windowEnd = new DateTime(lastpc);
     	windowEnd = windowEnd.plusWeeks(numWindows*2); // Two weeks after
     	while (!day.isAfter(windowEnd)) {
@@ -147,7 +147,7 @@ public class App {
     		}
     		// Calculate rent
     		if (day.getDayOfMonth() == 1) { // 1st of the Month
-    			simBal -= cc.getRent(); // We assume the use case is realistic and rent can always be 
+    			simBal -= cc.getRent(); // I assume the use case is realistic and rent can always be 
     											 // paid without going below min balance if no big purchases are made
     		}
     		// Calculate groceries
@@ -158,7 +158,7 @@ public class App {
     		if (day.getDayOfMonth() == 20) { // 20th of the Month
     			simBal -= cc.getCredit().getPayment();
     		}
-    		// Check if we went below the minimum
+    		// Check if it went below the minimum
     		if (simBal < cc.getChecking().getMin()) {
     			return false;
     		}
