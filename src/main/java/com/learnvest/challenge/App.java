@@ -45,6 +45,8 @@ public class App {
     	//     next window either. Assuming that 2 cycles of income are enough to pay for all monthly expenses, this should
     	//     be safe enough and it shouldn't be necessary to simulate and check a third window. As we simulate up to 4 weeks 
     	//     to the future, this mode has the lowest performance.
+    	// IMPORTANT NOTE: If the application doesn't see feasible to make any of the big purchases, then no time will be provided
+    	// for that purchase (Output Json will not have a 'when' variable)
     	Mode mode = Mode.C;
     	 	
     	// Timeline simulation approach to make sure it can provide the daily net worth for the CreditCard
