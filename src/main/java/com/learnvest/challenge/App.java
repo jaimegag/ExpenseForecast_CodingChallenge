@@ -8,6 +8,37 @@ import java.util.TreeMap;
 import com.learnvest.util.Json;
 import com.google.gson.reflect.TypeToken;
 
+/* SOLUTION EXPLANATION
+ * There are monthly transactions and bi-weekly transactions and so I decided to manage by-weekly cycles
+ * (or windows) to analyze the income-expense flow, from paycheck to paycheck.
+ * Some windows will be net positive, but some other may be net negative. I assume the use case is realistic and
+ * that 28-day/monthly net gain is positive, otherwise no major purchases would be possible ever. So every window or
+ * every other window must be positive, while there might be a negative window every other window (or every three in
+ * rare occasions, or only a couple a year in really rare occasions).
+ * Using the above assumptions these are the 3 different modes I have defined to try provide an answer to the case,
+ * considering that the parameters of the input file can change:
+ * Mode A (max safety):
+ *   - I assume the worst and consider we are always at the beginning of a negative window: it should be enough 
+ *     to have always enough balance in the checking to cover the maximum possible expense for the worst possible
+ *     day (rent + groceries + credit-card) plus the checking minimum balance, of course.
+ * Mode B (flexible but unsafe):
+ *   - Attempt to be more flexible to allow these purchases earlier in the timeline, by simulating the future
+ *     and checking if there is enough cash to cover the expenses of the current window (e.g: until next 
+ *     paycheck) without going below the minimum. But this assumption makes this mode not 100% safe: if current window 
+ *     is a positive window and we cover this window expenses very tightly and next window is a negative one then
+ *     it may fail to maintain checking account balance above the minimum next week (or after).
+ * Mode C (flexible and safe):
+ *   - Like Mode B but simulating next window as well and confirming it will not go below the minimum balance during
+ *     next window either. Assuming that 2 cycles of income are enough to pay for all monthly expenses, this should
+ *     be safe enough and it shouldn't be necessary to simulate and check a third window. As we simulate up to 4 weeks
+ *     to the future, this mode has the lowest performance.
+ *     
+ * IMPORTANT NOTE: If the application doesn't see feasible to make any of the big purchases, then no time will be provided
+ * for that purchase (Output Json will not have a 'when' variable for that given purchase)
+ * 
+ * @author Jaime Gonzalez Aguilar
+ * @version 0.1 9/9/2014
+ */
 public class App {
 	
 	public static enum Mode {A,B,C};
@@ -22,31 +53,7 @@ public class App {
     	DateTime end = new DateTime(2015, 12, 31, 0, 0, 0, 0); // December 31, 2015, 00:00:00
     	DateTime now = new DateTime(begin);
     	
-    	// There are monthly transactions and bi-weekly transactions and so I decided to manage by-weekly cycles
-    	// (or windows) to analyze the income-expense flow, from paycheck to paycheck.
-    	// Some windows will be net positive, but some other may be net negative. I assume the use case is realistic and
-    	// that 28-day/monthly net gain is positive, otherwise no major purchases would be possible ever. So every window or
-    	// every other window must be positive, while there might be a negative window every other window (or every three in
-    	// rare occasions, or only a couple a year in really rare occasions).
-    	// Using the above assumptions these are the 3 different modes I have defined to try provide an answer to the case,
-    	// considering that the parameters of the input file can change:
-    	// Mode A (max safety):
-    	//   - I assume the worst and consider we are always at the beginning of a negative window: it should be enough 
-    	//     to have always enough balance in the checking to cover the maximum possible expense for the worst possible
-    	//     day (rent + groceries + credit-card) plus the checking minimum balance, of course.
-    	// Mode B (flexible but unsafe):
-    	//   - Attempt to be more flexible to allow these purchases earlier in the timeline, by simulating the future
-    	//     and checking if there is enough cash to cover the expenses of the current window (e.g: until next 
-    	//     paycheck) without going below the minimum. But this assumption makes this mode not 100% safe: if current window 
-    	//     is a positive window and we cover this window expenses very tightly and next window is a negative one then
-    	//     it may fail to maintain checking account balance above the minimum next week (or after).
-    	// Mode C (flexible and safe):
-    	//   - Like Mode B but simulating next window as well and confirming it will not go below the minimum balance during
-    	//     next window either. Assuming that 2 cycles of income are enough to pay for all monthly expenses, this should
-    	//     be safe enough and it shouldn't be necessary to simulate and check a third window. As we simulate up to 4 weeks 
-    	//     to the future, this mode has the lowest performance.
-    	// IMPORTANT NOTE: If the application doesn't see feasible to make any of the big purchases, then no time will be provided
-    	// for that purchase (Output Json will not have a 'when' variable)
+    	// Mode C selected
     	Mode mode = Mode.C;
     	 	
     	// Timeline simulation approach to make sure it can provide the daily net worth for the CreditCard
